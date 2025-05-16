@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="16dp"
+    android:gravity="center_vertical">
+
+    <!-- Profile picture placeholder for friend request -->
+    <ImageView
+        android:id="@+id/imageViewRequestAvatar"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="12dp"
+        android:src="@drawable/ic_hooded_placeholder"
+        android:contentDescription="@string/friend_request_avatar"
+        android:scaleType="centerCrop" />
+
+    <!-- Username of the person who sent the request -->
+    <TextView
+        android:id="@+id/textViewRequestUsername"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Username"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <!-- Accept and Decline actions as Buttons -->
+    <Button
+        android:id="@+id/buttonAccept"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Accept"
+        android:backgroundTint="@color/green"
+        android:textColor="@color/black"
+        android:padding="8dp" />
+
+    <Button
+        android:id="@+id/buttonDecline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Decline"
+        android:backgroundTint="@color/violet_dark"
+        android:padding="8dp" />
+
+</LinearLayout>

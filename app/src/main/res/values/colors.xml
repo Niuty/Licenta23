@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--  Basic Colors  -->
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <!--  Violet Shades  -->
+    <color name="violet">#FF9400D3</color>
+    <color name="violet_light">#FFBA55D3</color>
+    <color name="violet_dark">#FF6A0080</color>
+    <color name="violet_dark_message">#640464</color>
+
+    <!--  Green Shades  -->
+    <color name="green">#FF00FF00</color>
+    <color name="green_light">#FF7FFF00</color>
+    <color name="green_dark">#FF008000</color>
+    <!--  Dark Blue Shades  -->
+    <color name="dark_blue">#FF00008B</color>
+    <color name="dark_blue_light">#FF4169E1</color>
+    <color name="dark_blue_dark">#FF000080</color>
+</resources>

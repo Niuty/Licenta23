@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/fragment_settings_scroll"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:id="@+id/fragment_settings_root"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="100dp"
+        android:gravity="center_horizontal">
+
+        <!-- Profile avatar -->
+        <ImageView
+            android:id="@+id/imageViewAvatar"
+            android:layout_width="140dp"
+            android:layout_height="140dp"
+            android:src="@drawable/ic_hooded_placeholder"
+            android:contentDescription="@string/profile_avatar"
+            android:scaleType="centerCrop"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Change photo button -->
+        <Button
+            android:id="@+id/buttonChangePhoto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/change_photo"
+            android:layout_marginBottom="24dp"
+            android:backgroundTint="@color/green"
+            android:textColor="@color/black"/>
+
+        <!-- Display name field -->
+        <EditText
+            android:id="@+id/editTextDisplayName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/display_name_hint"
+            android:inputType="textPersonName"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Save name button -->
+        <Button
+            android:id="@+id/buttonSaveName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/save_name"
+            android:layout_marginBottom="32dp"
+            android:backgroundTint="@color/violet"/>
+
+        <!-- Logout button -->
+        <Button
+            android:id="@+id/buttonLogout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/logout"
+            android:backgroundTint="@color/violet_dark"/>
+
+    </LinearLayout>
+</ScrollView>
