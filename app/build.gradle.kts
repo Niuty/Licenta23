@@ -1,5 +1,12 @@
 plugins {
     alias(libs.plugins.android.application)
+
+
+    // Add the Google services Gradle plugin
+
+    id("com.google.gms.google-services")
+
+
 }
 
 android {
@@ -50,5 +57,19 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+    // Firebase BoM
+    implementation(platform("com.google.firebase:firebase-bom:33.13.0"))
+
+    // Firebase Analytics (exemplu)
+    implementation("com.google.firebase:firebase-analytics")
+
+    // Firebase Realtime Database
+    implementation("com.google.firebase:firebase-database-ktx")
+
+    // (Opțional) Firebase Auth, Storage etc.
+    implementation("com.google.firebase:firebase-auth-ktx")
+    implementation("com.google.firebase:firebase-storage-ktx")
+    // https://firebase.google.com/docs/android/setup#available-libraries
+
 
 }

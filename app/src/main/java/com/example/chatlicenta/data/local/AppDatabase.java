@@ -10,10 +10,12 @@ import com.example.chatlicenta.data.local.dao.GroupDao;
 import com.example.chatlicenta.data.local.dao.MessageDao;
 import com.example.chatlicenta.data.local.dao.UserDao;
 import com.example.chatlicenta.data.local.dao.FriendDao;               // ← import nou
+import com.example.chatlicenta.data.local.dao.UserFriendCrossRefDao;
 import com.example.chatlicenta.data.local.entity.GroupEntity;
 import com.example.chatlicenta.data.local.entity.MessageEntity;
 import com.example.chatlicenta.data.local.entity.UserEntity;
 import com.example.chatlicenta.data.local.entity.FriendEntity;         // ← import nou
+import com.example.chatlicenta.data.local.entity.UserFriendCrossRef;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -23,9 +25,10 @@ import java.util.concurrent.Executors;
                 UserEntity.class,
                 FriendEntity.class,
                 GroupEntity.class,
-                MessageEntity.class
+                MessageEntity.class,
+                UserFriendCrossRef.class
         },
-        version = 6,                                  // ← bump de versiune
+        version = 7,                                  // ← bump de versiune
         exportSchema = false
 )
 public abstract class AppDatabase extends RoomDatabase {
@@ -39,6 +42,7 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract FriendDao friendDao();
     public abstract GroupDao groupDao();
     public abstract MessageDao messageDao();
+    public abstract UserFriendCrossRefDao userFriendCrossRefDao();
 
     public static AppDatabase getInstance(Context ctx) {
         if (INSTANCE == null) {

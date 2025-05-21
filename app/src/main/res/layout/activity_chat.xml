@@ -113,7 +113,7 @@
             android:padding="12dp"/>
 
         <ImageButton
-            android:id="@+id/buttonSend"
+            android:id="@+id/buttonSendMessageChat"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:src="@drawable/ic_send"
