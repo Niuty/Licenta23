@@ -1,5 +1,5 @@
 // app/src/main/java/com/example/chatlicenta/data/ChatRepository.java
-package com.example.chatlicenta.data;
+package com.example.chatlicenta.data.repository;
 
 import android.content.Context;
 

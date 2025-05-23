@@ -1,26 +1,31 @@
 package com.example.chatlicenta.ui.login;
 
+import android.content.Context;
+
+import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.annotation.NonNull;
 
-import com.example.chatlicenta.data.LoginDataSource;
-import com.example.chatlicenta.data.LoginRepository;
+import com.example.chatlicenta.data.repository.UserRepository;
 
 /**
- * ViewModel provider factory to instantiate LoginViewModel.
- * Required given LoginViewModel has a non-empty constructor
+ * Factory pentru LoginViewModel, oferind UserRepository ca dependență.
  */
 public class LoginViewModelFactory implements ViewModelProvider.Factory {
+    private final Context context;
 
+    public LoginViewModelFactory(@NonNull Context context) {
+        this.context = context.getApplicationContext();
+    }
+
+    @SuppressWarnings("unchecked")
     @NonNull
     @Override
-    @SuppressWarnings("unchecked")
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
         if (modelClass.isAssignableFrom(LoginViewModel.class)) {
-            return (T) new LoginViewModel(LoginRepository.getInstance(new LoginDataSource()));
-        } else {
-            throw new IllegalArgumentException("Unknown ViewModel class");
+            UserRepository repo = new UserRepository(context);
+            return (T) new LoginViewModel(repo);
         }
+        throw new IllegalArgumentException("Unknown ViewModel class: " + modelClass.getName());
     }
 }

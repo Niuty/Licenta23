@@ -1,4 +1,4 @@
-package com.example.chatlicenta.data;
+package com.example.chatlicenta.data.repository;
 
 import android.content.Context;
 

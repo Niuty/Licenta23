@@ -19,6 +19,7 @@ public interface UserDao {
     LiveData<UserEntity> findByIdLive(String id);
     @Query("SELECT * FROM users WHERE userId=:id")
     UserEntity findById(String id);
+
     @Update
     void update(UserEntity user);
     @Insert(onConflict=OnConflictStrategy.REPLACE)

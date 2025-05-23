@@ -15,36 +15,69 @@
         android:textStyle="bold"
         android:layout_marginTop="24dp" />
 
+    <!-- 1) Email -->
     <EditText
-        android:id="@+id/editTextNewUsername"
+        android:id="@+id/editTextEmailRegister"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/textViewRegisterTitle"
-        android:layout_marginTop="64dp"
-        android:layout_marginHorizontal="24dp"
-        android:hint="Nume utilizator"
-        android:inputType="text"
-        android:padding="12dp" />
+        android:layout_marginTop="48dp"
+        android:hint="Adresă de email"
+        android:inputType="textEmailAddress"
+        android:padding="12dp"
+        android:layout_marginHorizontal="24dp"/>
 
+    <!-- 2) Username (display name) -->
     <EditText
-        android:id="@+id/editTextNewPassword"
+        android:id="@+id/editTextNewUsernameRegister"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/editTextNewUsername"
+        android:layout_below="@id/editTextEmailRegister"
         android:layout_marginTop="16dp"
-        android:layout_marginHorizontal="24dp"
+        android:hint="Nume afișat"
+        android:inputType="textPersonName"
+        android:padding="12dp"
+        android:layout_marginHorizontal="24dp"/>
+
+    <!-- 3) Password -->
+    <EditText
+        android:id="@+id/editTextNewPasswordRegister"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/editTextNewUsernameRegister"
+        android:layout_marginTop="16dp"
         android:hint="Parolă"
         android:inputType="textPassword"
-        android:padding="12dp" />
+        android:padding="12dp"
+        android:layout_marginHorizontal="24dp"/>
 
+    <!-- 4) Register button -->
     <Button
         android:id="@+id/buttonRegisterConfirm"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:enabled="false"
-        android:layout_below="@id/editTextNewPassword"
+        android:layout_below="@id/editTextNewPasswordRegister"
         android:layout_marginTop="32dp"
         android:layout_marginHorizontal="24dp"
         android:text="Înregistrează-te" />
+
+    <!-- 5) Divider -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?android:attr/listDivider"
+        android:layout_below="@id/buttonRegisterConfirm"
+        android:layout_marginTop="24dp"
+        android:layout_marginHorizontal="24dp"/>
+
+    <!-- 6) Google Sign-In -->
+    <com.google.android.gms.common.SignInButton
+        android:id="@+id/buttonGoogleSignIn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/buttonRegisterConfirm"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="32dp"/>
 
 </RelativeLayout>

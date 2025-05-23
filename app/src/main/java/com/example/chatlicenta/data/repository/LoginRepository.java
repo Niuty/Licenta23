@@ -1,5 +1,7 @@
-package com.example.chatlicenta.data;
+package com.example.chatlicenta.data.repository;
 
+import com.example.chatlicenta.data.LoginDataSource;
+import com.example.chatlicenta.data.Result;
 import com.example.chatlicenta.data.model.LoggedInUser;
 
 /**

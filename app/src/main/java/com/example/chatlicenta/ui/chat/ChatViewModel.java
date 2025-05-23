@@ -9,8 +9,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.Observer;
 
-import com.example.chatlicenta.data.ChatRepository;
-import com.example.chatlicenta.data.FriendRepository;
+import com.example.chatlicenta.data.repository.ChatRepository;
+import com.example.chatlicenta.data.repository.FriendRepository;
 import com.example.chatlicenta.data.local.entity.MessageEntity;
 import com.example.chatlicenta.data.local.entity.FriendEntity;
 import com.example.chatlicenta.data.model.Message;
@@ -23,7 +23,7 @@ import java.util.Map;
 /**
  * ViewModel pentru ChatActivity care combină:
  * - LiveData<List<MessageEntity>> din Room (sincronizat cu Firebase)
- * - lista prietenilor din FriendRepository
+ * - fallback local + sincronizare live pentru lista de prieteni
  * și expune un LiveData<List<Message>> gata pentru UI.
  */
 public class ChatViewModel extends AndroidViewModel {
@@ -31,11 +31,12 @@ public class ChatViewModel extends AndroidViewModel {
     private final FriendRepository friendRepo;
     private final String conversationId;
 
-    // sursele noastre de date
+    // surse de date pentru mesaje și prieteni
     private final LiveData<List<MessageEntity>> rawMessages;
-    private final LiveData<List<FriendEntity>> friendsList;
+    private final LiveData<List<FriendEntity>> localFriends;
+    private final LiveData<List<FriendEntity>> remoteFriends;
 
-    // LiveData pe care o observă UI-ul
+    // LiveData combinată pentru UI
     private final MediatorLiveData<List<Message>> uiMessages = new MediatorLiveData<>();
 
     public ChatViewModel(@NonNull Application app, String conversationId) {
@@ -45,72 +46,71 @@ public class ChatViewModel extends AndroidViewModel {
         repo = new ChatRepository(app);
         friendRepo = new FriendRepository(app);
 
-        // 1) pornește ascultarea realtime + cache în Room
+        // Mesaje: pornește ascultarea Firebase → Room
         repo.subscribeAndCache(conversationId);
-
-        // 2) fluxul raw de entități din Room
         rawMessages = repo.getMessagesFor(conversationId);
 
-        // 3) lista de prieteni (doar entitățile, fără relație many-to-many)
-        friendsList = friendRepo.getAllFriendEntities();
+        // Prieteni: fallback local + sincronizare remote
+        localFriends = friendRepo.getAllFriendsLive();
+        remoteFriends = friendRepo.subscribeAndCache();
 
-        // 4) combinăm ambele LiveData pentru UI
-        uiMessages.addSource(rawMessages, combineObserver);
-        uiMessages.addSource(friendsList, combineObserver);
+        // Combină sursele prieteni într-un singur LiveData
+        MediatorLiveData<List<FriendEntity>> friendsList = new MediatorLiveData<>();
+        friendsList.addSource(localFriends,  friendsList::setValue);
+        friendsList.addSource(remoteFriends, friendsList::setValue);
+
+        // Observă mesaje și prieteni pentru a actualiza UI
+        uiMessages.addSource(rawMessages, ignored -> combine(rawMessages.getValue(), friendsList.getValue()));
+        uiMessages.addSource(friendsList, ignored -> combine(rawMessages.getValue(), friendsList.getValue()));
     }
 
-    /** Observer comun pentru rawMessages și friendsList */
-    private final Observer<Object> combineObserver = new Observer<Object>() {
-        @Override
-        public void onChanged(Object ignored) {
-            List<MessageEntity> entities = rawMessages.getValue();
-            List<FriendEntity> friends    = friendsList.getValue();
-
-            if (entities == null || friends == null) {
-                return;
-            }
-
-            // construim un map de userId → displayName
-            Map<String,String> nameLookup = new HashMap<>();
-            for (FriendEntity f : friends) {
-                nameLookup.put(f.getId(), f.getName());
-            }
-            // adăugăm și numele curent
-            String me = getApplication()
-                    .getSharedPreferences("chat_prefs", Context.MODE_PRIVATE)
-                    .getString("key_user_name", "Me");
-            String meId = getApplication()
-                    .getSharedPreferences("chat_prefs", Context.MODE_PRIVATE)
-                    .getString("key_user_id", "");
-            nameLookup.put(meId, me);
-
-            // mapăm fiecare MessageEntity → Message
-            List<Message> out = new ArrayList<>(entities.size());
-            for (MessageEntity e : entities) {
-                boolean sent = e.getSenderId().equals(meId);
-                String  name = nameLookup.getOrDefault(e.getSenderId(),
-                        sent ? me : "Unknown");
-
-                out.add(new Message(
-                        e.getConversationId(),
-                        e.getSenderId(),
-                        name,
-                        e.getContent(),
-                        e.getTimestamp(),
-                        sent
-                ));
-            }
-            uiMessages.setValue(out);
+    /**
+     * Combină mesajele și lista de prieteni pentru UI.
+     */
+    private void combine(List<MessageEntity> messages, List<FriendEntity> friends) {
+        if (messages == null || friends == null) {
+            return;
         }
-    };
 
-    /** LiveData observată de Activity/Fragment */
+        // Creează lookup userId → displayName
+        Map<String, String> nameLookup = new HashMap<>();
+        for (FriendEntity friend : friends) {
+            nameLookup.put(friend.getId(), friend.getName());
+        }
+        String meId = getApplication()
+                .getSharedPreferences("chat_prefs", Context.MODE_PRIVATE)
+                .getString("key_user_id", "");
+        String meName = getApplication()
+                .getSharedPreferences("chat_prefs", Context.MODE_PRIVATE)
+                .getString("key_user_name", "Me");
+        nameLookup.put(meId, meName);
+
+        // Mapare MessageEntity → Message cu nume
+        List<Message> result = new ArrayList<>(messages.size());
+        for (MessageEntity e : messages) {
+            boolean sent = e.getSenderId().equals(meId);
+            String displayName = nameLookup.getOrDefault(e.getSenderId(), sent ? meName : "Unknown");
+            result.add(new Message(
+                    e.getConversationId(),
+                    e.getSenderId(),
+                    displayName,
+                    e.getContent(),
+                    e.getTimestamp(),
+                    sent
+            ));
+        }
+        uiMessages.setValue(result);
+    }
+
+    /**
+     * Returnează LiveData gata pentru afișare de către Activity.
+     */
     public LiveData<List<Message>> getUiMessages() {
         return uiMessages;
     }
 
     /**
-     * Trimite un mesaj text.
+     * Trimite un mesaj text prin repository.
      */
     public void sendMessage(String text) {
         String userId = getApplication()
@@ -120,8 +120,8 @@ public class ChatViewModel extends AndroidViewModel {
                 .getSharedPreferences("chat_prefs", Context.MODE_PRIVATE)
                 .getString("key_user_name", "");
 
-        long ts = System.currentTimeMillis();
-        Message m = new Message(conversationId, userId, userName, text, ts, true);
-        repo.sendMessage(conversationId, m);
+        long timestamp = System.currentTimeMillis();
+        Message message = new Message(conversationId, userId, userName, text, timestamp, true);
+        repo.sendMessage(conversationId, message);
     }
 }

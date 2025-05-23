@@ -7,7 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
-import com.example.chatlicenta.data.GroupRepository;
+import com.example.chatlicenta.data.repository.GroupRepository;
 import com.example.chatlicenta.data.local.entity.GroupEntity;
 
 import java.util.List;

@@ -1,6 +1,6 @@
-package com.example.chatlicenta.data;
+package com.example.chatlicenta.data.repository;
 
-import com.example.chatlicenta.data.model.LoggedInUser;
+import com.example.chatlicenta.data.Result;
 
 import java.io.IOException;
 import java.util.UUID;

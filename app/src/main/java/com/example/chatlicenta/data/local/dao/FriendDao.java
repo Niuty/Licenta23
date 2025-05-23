@@ -14,14 +14,19 @@ import java.util.List;
 
 @Dao
 public interface FriendDao {
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(FriendEntity friend);
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertAll(List<FriendEntity> friends);
 
     @Update
     void update(FriendEntity friend);
 
     @Delete
     void delete(FriendEntity friend);
+    @Query("DELETE FROM friends")
+    void deleteAll();
 
     @Query("SELECT * FROM friends ORDER BY name ASC")
     LiveData<List<FriendEntity>> getAllFriends();

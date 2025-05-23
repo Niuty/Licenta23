@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.KeyEvent;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Toast;
 
@@ -14,8 +13,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.chatlicenta.R;
-import com.example.chatlicenta.data.model.LoggedInUser;
-import com.example.chatlicenta.data.session.SessionManager;
 import com.example.chatlicenta.databinding.ActivityRegisterBinding;
 import com.example.chatlicenta.ui.main.MainActivity;
 
@@ -31,26 +28,27 @@ public class RegisterActivity extends AppCompatActivity {
         binding = ActivityRegisterBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        registerViewModel = new ViewModelProvider(this, new RegisterViewModelFactory())
-                .get(RegisterViewModel.class);
+        // Initialize ViewModel with factory that takes Context
+        registerViewModel = new ViewModelProvider(
+                this,
+                new RegisterViewModelFactory(this)
+        ).get(RegisterViewModel.class);
 
         registerViewModel.getRegisterFormState().observe(this, formState -> {
             if (formState == null) return;
 
             binding.buttonRegisterConfirm.setEnabled(formState.isDataValid());
 
+            if (formState.getEmailError() != null) {
+                binding.editTextEmailRegister.setError(getString(formState.getEmailError()));
+            }
             if (formState.getUsernameError() != null) {
-                binding.editTextNewUsername.setError(getString(formState.getUsernameError()));
+                binding.editTextNewUsernameRegister.setError(getString(formState.getUsernameError()));
             }
             if (formState.getPasswordError() != null) {
-                binding.editTextNewPassword.setError(getString(formState.getPasswordError()));
+                binding.editTextNewPasswordRegister.setError(getString(formState.getPasswordError()));
             }
         });
-
-        registerViewModel.registerDataChanged(
-                binding.editTextNewUsername.getText().toString(),
-                binding.editTextNewPassword.getText().toString()
-        );
 
         registerViewModel.getRegisterResult().observe(this, result -> {
             if (result == null) return;
@@ -59,64 +57,48 @@ public class RegisterActivity extends AppCompatActivity {
                 showRegisterFailed(result.getError());
             }
             if (result.getSuccess() != null) {
-                RegisteredUserView user = result.getSuccess();
-                // 1) arată toast
-                updateUiWithUser(user);
-                // 2) salvează sesiunea
-                new SessionManager(this)
-                        .saveUser(new LoggedInUser(user.getUserId(), user.getDisplayName()));
-                // 3) trimite rezultatul și închide
+                // Registration successful, navigate to MainActivity
+                startActivity(new Intent(this, MainActivity.class));
                 setResult(Activity.RESULT_OK);
                 finish();
-                // 4) deschide MainActivity
-                startActivity(new Intent(this, MainActivity.class));
             }
         });
 
         TextWatcher afterTextChanged = new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override public void afterTextChanged(Editable s) {
                 registerViewModel.registerDataChanged(
-                        binding.editTextNewUsername.getText().toString(),
-                        binding.editTextNewPassword.getText().toString()
+                        binding.editTextEmailRegister.getText().toString(),
+                        binding.editTextNewUsernameRegister.getText().toString(),
+                        binding.editTextNewPasswordRegister.getText().toString()
                 );
             }
         };
 
-        binding.editTextNewUsername.addTextChangedListener(afterTextChanged);
-        binding.editTextNewPassword.addTextChangedListener(afterTextChanged);
-        binding.editTextNewPassword.setOnEditorActionListener((v, actionId, event) -> {
+        binding.editTextEmailRegister.addTextChangedListener(afterTextChanged);
+        binding.editTextNewUsernameRegister.addTextChangedListener(afterTextChanged);
+        binding.editTextNewPasswordRegister.addTextChangedListener(afterTextChanged);
+
+        binding.editTextNewPasswordRegister.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                registerViewModel.register(
-                        binding.editTextNewUsername.getText().toString(),
-                        binding.editTextNewPassword.getText().toString()
-                );
+                attemptRegister();
                 return true;
             }
             return false;
         });
 
-        binding.buttonRegisterConfirm.setOnClickListener(v ->
-                registerViewModel.register(
-                        binding.editTextNewUsername.getText().toString(),
-                        binding.editTextNewPassword.getText().toString()
-                ));
+        binding.buttonRegisterConfirm.setOnClickListener(v -> attemptRegister());
     }
 
-    private void updateUiWithUser(RegisteredUserView model) {
-        String welcomeMessage = getString(R.string.welcome) + model.getDisplayName();
-        Toast.makeText(getApplicationContext(), welcomeMessage, Toast.LENGTH_LONG).show();
+    private void attemptRegister() {
+        String email       = binding.editTextEmailRegister.getText().toString().trim();
+        String displayName = binding.editTextNewUsernameRegister.getText().toString().trim();
+        String password    = binding.editTextNewPasswordRegister.getText().toString();
+        registerViewModel.register(email, displayName, password);
     }
 
     private void showRegisterFailed(@StringRes Integer errorString) {
-        Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), getString(errorString), Toast.LENGTH_SHORT).show();
     }
 }

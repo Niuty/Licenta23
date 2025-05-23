@@ -1,14 +1,12 @@
 package com.example.chatlicenta.ui.fragments_main_tabs;
 
 import android.app.Application;
-import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.ViewModel;
 
-import com.example.chatlicenta.data.FriendRepository;
+import com.example.chatlicenta.data.repository.FriendRepository;
 import com.example.chatlicenta.data.local.entity.FriendEntity;
 import com.example.chatlicenta.data.model.Friend;
 
@@ -21,15 +19,20 @@ public class FriendViewModel extends AndroidViewModel {
     public FriendViewModel(@NonNull Application application) {
         super(application);                                // ← must call super
         repo = new FriendRepository(application);          // use application
-        friendEntities = repo.getAllFriendEntities();
+        friendEntities = repo.getAllFriendsLive();
     }
 
     public LiveData<List<FriendEntity>> getFriends() {
         return friendEntities;
     }
 
-    public void addFriend(Friend f) {
-        repo.addFriend(f);
+    public void addFriend(Friend friend) {
+        FriendEntity fe = new FriendEntity(
+                friend.getId(),
+                friend.getName(),
+                friend.getPhotoUri()
+        );
+        repo.addFriend(fe);
     }
 
     public void removeFriend(String id) {

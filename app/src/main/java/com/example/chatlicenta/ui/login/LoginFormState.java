@@ -3,38 +3,41 @@ package com.example.chatlicenta.ui.login;
 import androidx.annotation.Nullable;
 
 /**
- * Data validation state of the login form.
+ * Starea formularului de login: posibilă eroare de email, parolă și flag de validare.
  */
-class LoginFormState {
+public class LoginFormState {
     @Nullable
-    private Integer usernameError;
+    private Integer emailError;
     @Nullable
     private Integer passwordError;
     private boolean isDataValid;
 
-    LoginFormState(@Nullable Integer usernameError, @Nullable Integer passwordError) {
-        this.usernameError = usernameError;
+    /** Constructor pentru stare de eroare (email și/sau parolă) */
+    public LoginFormState(@Nullable Integer emailError,
+                          @Nullable Integer passwordError) {
+        this.emailError    = emailError;
         this.passwordError = passwordError;
-        this.isDataValid = false;
+        this.isDataValid   = false;
     }
 
-    LoginFormState(boolean isDataValid) {
-        this.usernameError = null;
+    /** Constructor pentru stare validă */
+    public LoginFormState(boolean isDataValid) {
+        this.emailError    = null;
         this.passwordError = null;
-        this.isDataValid = isDataValid;
+        this.isDataValid   = isDataValid;
     }
 
     @Nullable
-    Integer getUsernameError() {
-        return usernameError;
+    public Integer getEmailError() {
+        return emailError;
     }
 
     @Nullable
-    Integer getPasswordError() {
+    public Integer getPasswordError() {
         return passwordError;
     }
 
-    boolean isDataValid() {
+    public boolean isDataValid() {
         return isDataValid;
     }
 }
